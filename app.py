@@ -1,4 +1,3 @@
-
 # -----------------------------NEW-------------------------------
 import streamlit as st
 import pandas as pd
@@ -14,7 +13,44 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ── Global CSS + Animations ───────────────────────────────────────────────────
+# ── Theme palettes (light + dark) ─────────────────────────────────────────────
+# Your palette: #345C32 · #9CAC54 · #97CD97
+# Extra tones (very light tints for light mode, very dark shades for dark mode and
+# text) are derived from the same green hue for contrast.
+LIGHT = {
+    "scheme": "light",
+    "bg": "#EAF3E2",        "card": "#DCEBD3",      "card2": "#C3E3C3",
+    "border": "#C3E3C3",    "border2": "#97CD97",
+    "ink": "#1F3A1E",       "muted": "#4A6B48",     "label": "#3B5A39",
+    "accent": "#345C32",
+    "g1": "#345C32",        "g2": "#9CAC54",
+    "fill1": "#97CD97",     "fill2": "#345C32",
+    "price1": "#1F3A1E",    "price2": "#345C32",
+    "orb1": "#97CD9755",    "orb2": "#9CAC5444",
+    "btn1": "#97CD97",      "btn2": "#9CAC54",      "btntxt": "#1F3A1E",
+    "badge1": "#C3E3C3",    "badge2": "#DCEBD3",    "badgetxt": "#345C32",
+    "pill1": "#C3E3C3",     "pill2": "#EAF3E2",     "pilltxt": "#345C32",
+    "ring": "#97CD9760",    "shadow": "#97CD9770",  "shadow2": "#97CD97aa",
+    "thumb": "#345C32",     "track": "#EAF3E2",
+}
+DARK = {
+    "scheme": "dark",
+    "bg": "#121C12",        "card": "#1B2A1B",      "card2": "#2A4A2A",
+    "border": "#2C4A2B",    "border2": "#4C7F49",
+    "ink": "#EAF5E6",       "muted": "#A9C2A4",     "label": "#C3D8BE",
+    "accent": "#97CD97",
+    "g1": "#97CD97",        "g2": "#9CAC54",
+    "fill1": "#97CD97",     "fill2": "#9CAC54",
+    "price1": "#ffffff",    "price2": "#97CD97",
+    "orb1": "#97CD9730",    "orb2": "#9CAC5422",
+    "btn1": "#97CD97",      "btn2": "#9CAC54",      "btntxt": "#121C12",
+    "badge1": "#264A26",    "badge2": "#1B2A1B",    "badgetxt": "#97CD97",
+    "pill1": "#264A26",     "pill2": "#1B2A1B",     "pilltxt": "#97CD97",
+    "ring": "#97CD9740",    "shadow": "#97CD9740",  "shadow2": "#97CD9770",
+    "thumb": "#97CD97",     "track": "#121C12",
+}
+
+# ── Global CSS + Animations (all colours come from CSS variables) ─────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600&display=swap');
@@ -22,9 +58,10 @@ st.markdown("""
 /* ── Reset & Base ── */
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
-    background: #080B12;
-    color: #DDE1F0;
+    background: var(--bg);
+    color: var(--ink);
 }
+.stApp, [data-testid="stAppViewContainer"] { background: var(--bg) !important; color: var(--ink); }
 .block-container { padding: 0 2.5rem 5rem; max-width: 1150px; }
 
 /* ── Animated gradient orb background ── */
@@ -32,7 +69,7 @@ html, body, [class*="css"] {
     position: fixed;
     top: -200px; left: -200px;
     width: 700px; height: 700px;
-    background: radial-gradient(circle, #1A3AFF22 0%, transparent 70%);
+    background: radial-gradient(circle, var(--orb1) 0%, transparent 70%);
     border-radius: 50%;
     animation: drift 12s ease-in-out infinite alternate;
     pointer-events: none;
@@ -42,7 +79,7 @@ html, body, [class*="css"] {
     position: fixed;
     bottom: -150px; right: -150px;
     width: 500px; height: 500px;
-    background: radial-gradient(circle, #8B2FFF18 0%, transparent 70%);
+    background: radial-gradient(circle, var(--orb2) 0%, transparent 70%);
     border-radius: 50%;
     animation: drift2 15s ease-in-out infinite alternate;
     pointer-events: none;
@@ -53,20 +90,20 @@ html, body, [class*="css"] {
 
 /* ── Hero ── */
 .hero-wrap {
-    padding: 4.5rem 0 2rem;
+    padding: 1.5rem 0 2rem;
     position: relative;
     z-index: 1;
 }
 .badge {
     display: inline-block;
-    background: linear-gradient(90deg,#1A3AFF22,#8B2FFF22);
-    border: 1px solid #1A3AFF44;
+    background: linear-gradient(90deg, var(--badge1), var(--badge2));
+    border: 1px solid var(--border2);
     border-radius: 999px;
     padding: 0.3rem 1rem;
     font-size: 0.68rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: #7B9FFF;
+    color: var(--badgetxt);
     margin-bottom: 1.2rem;
     animation: fadeSlideDown 0.8s ease both;
 }
@@ -78,15 +115,19 @@ html, body, [class*="css"] {
     margin: 0 0 1.2rem;
     animation: fadeSlideDown 0.9s ease 0.1s both;
 }
+.stApp h1.hero-title, h1.hero-title {
+    color: var(--ink) !important;
+    -webkit-text-fill-color: var(--ink);
+}
 .hero-title .accent {
-    background: linear-gradient(135deg, #4D7AFF, #B56EFF);
+    background: linear-gradient(135deg, var(--g1), var(--g2));
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: transparent !important;
     background-clip: text;
 }
 .hero-sub {
     font-size: 1.05rem;
-    color: #7B859E;
+    color: var(--muted);
     max-width: 520px;
     line-height: 1.7;
     animation: fadeSlideDown 1s ease 0.2s both;
@@ -101,8 +142,8 @@ html, body, [class*="css"] {
     display: flex;
     gap: 2rem;
     padding: 1.2rem 2rem;
-    background: #0E1220;
-    border: 1px solid #1C2340;
+    background: var(--card);
+    border: 1px solid var(--border);
     border-radius: 14px;
     margin: 1.5rem 0 2.5rem;
     animation: fadeSlideDown 1s ease 0.3s both;
@@ -112,19 +153,17 @@ html, body, [class*="css"] {
     font-family: 'Playfair Display', serif;
     font-size: 1.6rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #4D7AFF, #B56EFF);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-variant-numeric: lining-nums;
+    color: var(--accent);
 }
-.stat-lbl { font-size: 0.7rem; color: #4A5268; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+.stat-lbl { font-size: 0.7rem; color: var(--label); font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
 
 /* ── Section header ── */
 .section-hdr {
     font-size: 0.65rem;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: #4D7AFF;
+    color: var(--accent);
     font-weight: 600;
     margin: 2rem 0 1rem;
     display: flex;
@@ -135,13 +174,13 @@ html, body, [class*="css"] {
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, #1C2340, transparent);
+    background: linear-gradient(90deg, var(--border2), transparent);
 }
 
 /* ── Input cards ── */
 .input-card {
-    background: #0E1220;
-    border: 1px solid #1C2340;
+    background: var(--card);
+    border: 1px solid var(--border);
     border-radius: 16px;
     padding: 1.6rem 1.8rem 1.2rem;
     margin-bottom: 1rem;
@@ -154,41 +193,76 @@ html, body, [class*="css"] {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 2px;
-    background: linear-gradient(90deg, #4D7AFF, #B56EFF);
+    background: linear-gradient(90deg, var(--border2), var(--card2));
     opacity: 0;
     transition: opacity 0.3s;
 }
-.input-card:hover { border-color: #2A3560; }
+.input-card:hover { border-color: var(--border2); }
 .input-card:hover::before { opacity: 1; }
 
 /* ── Streamlit widget overrides ── */
 div[data-baseweb="input"] > div,
 div[data-baseweb="select"] > div:first-child {
-    background: #13182A !important;
-    border-color: #222840 !important;
+    background: var(--card) !important;
+    border-color: var(--border2) !important;
     border-radius: 10px !important;
-    color: #DDE1F0 !important;
+    color: var(--ink) !important;
     transition: border-color 0.2s !important;
 }
 div[data-baseweb="input"]:focus-within > div,
 div[data-baseweb="select"]:focus-within > div:first-child {
-    border-color: #4D7AFF !important;
-    box-shadow: 0 0 0 3px #4D7AFF18 !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px var(--ring) !important;
 }
-div[data-baseweb="input"] input { color: #DDE1F0 !important; }
-label { color: #8890A8 !important; font-size: 0.83rem !important; font-weight: 500 !important; }
+div[data-baseweb="input"] input { color: var(--ink) !important; }
+div[data-baseweb="select"] div, div[data-baseweb="select"] span { color: var(--ink) !important; }
+div[data-baseweb="select"] svg { fill: var(--ink) !important; }
+label, label p { color: var(--label) !important; font-size: 0.83rem !important; font-weight: 500 !important; }
+
+/* ── Dropdown menu (selectbox) ── */
+div[data-baseweb="popover"] > div,
+ul[role="listbox"] { background: var(--card) !important; }
+li[role="option"] { background: var(--card) !important; color: var(--ink) !important; }
+li[role="option"]:hover, li[aria-selected="true"] { background: var(--card2) !important; }
+
+/* ── Number input (+ / − buttons) ── */
+div[data-testid="stNumberInputContainer"] {
+    background: var(--card) !important;
+    border: 1px solid var(--border2) !important;
+    border-radius: 10px !important;
+    overflow: hidden;
+}
+div[data-testid="stNumberInputContainer"] > div { border: none !important; }
+div[data-testid="stNumberInput"] button {
+    background: var(--card2) !important;
+    color: var(--ink) !important;
+    border: none !important;
+}
+div[data-testid="stNumberInput"] button:hover:not(:disabled) { background: var(--border2) !important; }
+div[data-testid="stNumberInput"] button:disabled { opacity: 0.4; }
+div[data-testid="stNumberInput"] button svg { fill: var(--ink) !important; color: var(--ink) !important; }
+div[data-testid="stNumberInput"] input { color: var(--ink) !important; font-weight: 500; }
 
 /* ── Slider overrides ── */
-div[data-testid="stSlider"] > div > div > div {
-    background: linear-gradient(90deg, #4D7AFF, #B56EFF) !important;
+div[data-baseweb="slider"] div[role="slider"] {
+    background: var(--thumb) !important;
+    border-color: var(--thumb) !important;
+    box-shadow: 0 0 0 4px var(--ring) !important;
 }
+div[data-testid="stSliderThumbValue"],
+div[data-testid="stSlider"] [data-testid="stThumbValue"] {
+    color: var(--accent) !important;
+    font-weight: 700 !important;
+}
+div[data-testid="stSliderTickBarMin"],
+div[data-testid="stSliderTickBarMax"] { color: var(--label) !important; }
 
 /* ── Predict button ── */
 .stButton > button {
     width: 100%;
     padding: 1rem 2rem;
-    background: linear-gradient(135deg, #1A3AFF, #7B2FFF);
-    color: #fff;
+    background: linear-gradient(135deg, var(--btn1), var(--btn2));
+    color: var(--btntxt);
     font-weight: 700;
     font-size: 1.05rem;
     border: none;
@@ -196,12 +270,13 @@ div[data-testid="stSlider"] > div > div > div {
     cursor: pointer;
     letter-spacing: 0.04em;
     transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 4px 24px #1A3AFF30;
+    box-shadow: 0 4px 24px var(--shadow);
     margin-top: 1.2rem;
 }
 .stButton > button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px #1A3AFF50;
+    box-shadow: 0 8px 32px var(--shadow2);
+    color: var(--btntxt);
 }
 .stButton > button:active { transform: translateY(0); }
 
@@ -210,7 +285,7 @@ div[data-testid="stSlider"] > div > div > div {
     position: relative;
     border-radius: 20px;
     padding: 2px;
-    background: linear-gradient(135deg, #4D7AFF, #B56EFF);
+    background: linear-gradient(135deg, var(--btn1), var(--btn2));
     margin-top: 2.5rem;
     animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
 }
@@ -219,7 +294,7 @@ div[data-testid="stSlider"] > div > div > div {
     to   { opacity:1; transform:scale(1);    }
 }
 .result-inner {
-    background: #0B0E1A;
+    background: var(--card);
     border-radius: 18px;
     padding: 3rem 2rem;
     text-align: center;
@@ -228,7 +303,7 @@ div[data-testid="stSlider"] > div > div > div {
     font-size: 0.68rem;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: #4D7AFF;
+    color: var(--accent);
     font-weight: 600;
     margin-bottom: 0.6rem;
 }
@@ -236,7 +311,7 @@ div[data-testid="stSlider"] > div > div > div {
     font-family: 'Playfair Display', serif;
     font-size: clamp(3.5rem, 8vw, 5.5rem);
     font-weight: 900;
-    background: linear-gradient(135deg, #ffffff 30%, #B56EFF 100%);
+    background: linear-gradient(135deg, var(--price1) 30%, var(--price2) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -246,33 +321,33 @@ div[data-testid="stSlider"] > div > div > div {
 }
 .result-range {
     font-size: 0.85rem;
-    color: #3A4268;
+    color: var(--muted);
     margin-bottom: 2rem;
 }
-.result-range span { color: #6B7FBB; }
+.result-range span { color: var(--ink); }
 
 /* ── Feature meter bars ── */
 .meters { display: flex; flex-direction: column; gap: 0.7rem; text-align: left; max-width: 480px; margin: 0 auto; }
 .meter-row { display: flex; align-items: center; gap: 0.75rem; }
-.meter-lbl { font-size: 0.72rem; color: #5A6280; width: 130px; flex-shrink: 0; }
-.meter-track { flex: 1; height: 5px; background: #1C2340; border-radius: 99px; overflow: hidden; }
-.meter-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #4D7AFF, #B56EFF); }
-.meter-val { font-size: 0.72rem; color: #8890A8; width: 60px; text-align: right; flex-shrink: 0; }
+.meter-lbl { font-size: 0.72rem; color: var(--muted); width: 130px; flex-shrink: 0; }
+.meter-track { flex: 1; height: 5px; background: var(--track); border-radius: 99px; overflow: hidden; }
+.meter-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--fill1), var(--fill2)); }
+.meter-val { font-size: 0.72rem; color: var(--label); width: 60px; text-align: right; flex-shrink: 0; }
 
 /* ── Confidence pill ── */
 .conf-pill {
     display: inline-block;
-    background: linear-gradient(90deg,#4D7AFF18,#B56EFF18);
-    border: 1px solid #4D7AFF33;
+    background: linear-gradient(90deg, var(--pill1), var(--pill2));
+    border: 1px solid var(--border2);
     border-radius: 999px;
     padding: 0.4rem 1.2rem;
     font-size: 0.78rem;
-    color: #7B9FFF;
+    color: var(--pilltxt);
     margin-top: 1.5rem;
 }
 
 /* ── Footer ── */
-.footer { text-align:center; color:#252A3A; font-size:0.7rem; padding:3rem 0 1rem; }
+.footer { text-align:center; color:var(--muted); font-size:0.7rem; padding:3rem 0 1rem; }
 
 /* ── Hide Streamlit chrome ── */
 #MainMenu, footer, header { visibility: hidden; }
@@ -281,6 +356,18 @@ div[data-testid="stSlider"] > div > div > div {
 <div class="orb-bg"></div>
 <div class="orb-bg2"></div>
 """, unsafe_allow_html=True)
+
+# ── Dark mode toggle (top right) ──────────────────────────────────────────────
+_sp, _tg = st.columns([5, 1])
+with _tg:
+    dark_mode = st.toggle("🌙 Dark mode", value=False, key="dark_mode")
+
+theme = DARK if dark_mode else LIGHT
+_vars = ";".join(f"--{k}:{v}" for k, v in theme.items() if k != "scheme")
+st.markdown(
+    f"<style>:root{{{_vars};color-scheme:{theme['scheme']};}}</style>",
+    unsafe_allow_html=True,
+)
 
 
 # ── HERO ──────────────────────────────────────────────────────────────────────
